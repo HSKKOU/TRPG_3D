@@ -11,6 +11,13 @@
       this.m_Owner = owner;
     }
 
+
+    // パラメータを設定
+    public virtual bool SetParameter(object parameter)
+    {
+      return true;
+    }
+
     // このステートに遷移する時に一度だけ呼ばれる
     public virtual void Enter() { /* do nothing */ }
 

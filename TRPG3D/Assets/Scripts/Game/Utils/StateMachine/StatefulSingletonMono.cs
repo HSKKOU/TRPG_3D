@@ -25,12 +25,12 @@ namespace Utils.StateMachine
     /// <summary>
     /// Stateの切り替え
     /// </summary>
-    public virtual void ChangeState(TEnum state)
+    public virtual void ChangeState(TEnum state, object parameter = null)
     {
       if (m_StateMachine == null) { return; }
       m_CurrentState = state;
       //      Debug.Log ("Change State to " + currentState.ToString() + ": " + typeof(T).ToString());
-      m_StateMachine.ChangeState(m_StateList[state.ToInt32(null)]);
+      m_StateMachine.ChangeState(m_StateList[state.ToInt32(null)], parameter);
     }
 
     /// <summary>

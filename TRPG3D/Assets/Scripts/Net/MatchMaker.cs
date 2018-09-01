@@ -10,8 +10,15 @@ namespace Net
 {
     public class MatchMaker : MonoBehaviour
     {
-        [SerializeField]
-        private string m_TitleSceneName;
+        /// <summary>
+        /// マッチのプレイヤーの最大人数
+        /// </summary>
+        private const uint MATCH_SIZE = 5;
+
+        /// <summary>
+        /// リストのマッチの最大数
+        /// </summary>
+        private const int RESULT_PAGE_SIZE = 10;
 
         [SerializeField]
         private Text m_Text;
@@ -22,13 +29,13 @@ namespace Net
             FindInternetMatch("");
         }
 
-#region マッチ作成
+#region ルーム作成
+
         public void CreateInternetMatch()
         {
             m_Text.text = "Create Match...";
 
             var matchName = "";
-            uint matchSize = 5;                //マッチのプレイヤーの最大人数
             var matchAdvertise = true;         //NetworkMatch.ListMatchesで帰ってくるList<MatchInfoSnapshot>に、このマッチを含めるかどうか
             var matchPassword = "";            //マッチのパスワード
             var publicClientAddress = "";      //クライアントがインターネット経由で直接接続するためのネットワークアドレス
@@ -36,7 +43,7 @@ namespace Net
             var eloScoreForMatch = 0;          //いわゆるスキルレート。全クライアントが0だとランダムになる
             var requestDomain = 0;             //クライアントバージョンを区別するための番号
 
-            NetworkManager.singleton.matchMaker.CreateMatch(matchName, matchSize, matchAdvertise, matchPassword, publicClientAddress, privateClientAddress, eloScoreForMatch, requestDomain, OnInternetMatchCreate);
+            NetworkManager.singleton.matchMaker.CreateMatch(matchName, MATCH_SIZE, matchAdvertise, matchPassword, publicClientAddress, privateClientAddress, eloScoreForMatch, requestDomain, OnInternetMatchCreate);
         }
 
         private void OnInternetMatchCreate(bool success, string extendedInfo, MatchInfo matchInfo)
@@ -51,15 +58,14 @@ namespace Net
             else
             {
                 m_Text.text = "Create match failed";
-                // SceneManager.LoadScene(m_TitleSceneName);
             }
         }
-#endregion
+
+#endregion // ルーム作成
 
         public void FindInternetMatch(string matchName)
         {
             var startPageNumber = 0;                         //リストし始めるページ
-            var resultPageSize = 10;                         //callbackに渡すリストのマッチの最大数
             var matchNameFilter = matchName;                 //*<matchNameFilter>*に該当するマッチが検索される
             var filterOutPrivateMatchesFromResults = true;   //プライベートマッチを検索結果に含めるかどうか
             var eloScoreTarget = 0;                          //検索するときのスキルレート
@@ -67,7 +73,7 @@ namespace Net
 
             m_Text.text = "Searching Match...";
 
-            NetworkManager.singleton.matchMaker.ListMatches(startPageNumber, resultPageSize, matchNameFilter, filterOutPrivateMatchesFromResults, eloScoreTarget, requestDomain, OnJoinInternetMatch);
+            NetworkManager.singleton.matchMaker.ListMatches(startPageNumber, RESULT_PAGE_SIZE, matchNameFilter, filterOutPrivateMatchesFromResults, eloScoreTarget, requestDomain, OnJoinInternetMatch);
         }
 
         private void OnJoinInternetMatch(bool success, string extendedInfo, List<MatchInfoSnapshot> matches)
@@ -88,7 +94,6 @@ namespace Net
             else
             {
                 m_Text.text = "Couldn't connect to match maker";
-                // SceneManager.LoadScene(m_TitleSceneName);
             }
         }
 
@@ -103,12 +108,6 @@ namespace Net
             {
                 CreateInternetMatch();
             }
-        }
-
-
-        private void OnDestroy()
-        {
-
         }
     }
 }

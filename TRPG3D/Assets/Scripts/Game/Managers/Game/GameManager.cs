@@ -9,11 +9,16 @@ namespace Game
 	// ゲームの状態
 	public enum GameState
 	{
-		Init,
-		Title,
-		TestNetwork,
-		Lobby,
-		InGame,
+		Init,			// 初期化
+		Title,			// タイトル
+
+		CreateField,	// フィールド作成
+
+		Lobby,			// ロビー
+		InGame,			// インゲーム
+
+		TestNetwork,	// ネットワークテスト
+
 		Num
 	}
 
@@ -30,9 +35,13 @@ namespace Game
 
 			m_StateList.Add(new GameStateInit(this));
 			m_StateList.Add(new GameStateTitle(this));
-			m_StateList.Add(new GameStateTestNetwork(this));
+
+			m_StateList.Add(new GameStateCreateField(this));
+
 			m_StateList.Add(new GameStateLobby(this));
 			m_StateList.Add(new GameStateInGame(this));
+
+			m_StateList.Add(new GameStateTestNetwork(this));
 
 			ChangeState(GameState.Init);
 		}
