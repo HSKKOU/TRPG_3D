@@ -11,6 +11,7 @@ namespace Game
 	{
 		Init,
 		Title,
+		TestNetwork,
 		Lobby,
 		InGame,
 		Num
@@ -29,6 +30,7 @@ namespace Game
 
 			m_StateList.Add(new GameStateInit(this));
 			m_StateList.Add(new GameStateTitle(this));
+			m_StateList.Add(new GameStateTestNetwork(this));
 			m_StateList.Add(new GameStateLobby(this));
 			m_StateList.Add(new GameStateInGame(this));
 

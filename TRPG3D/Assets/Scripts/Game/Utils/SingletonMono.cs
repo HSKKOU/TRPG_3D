@@ -24,7 +24,7 @@ namespace Utils
     /// <summary>
     /// インスタンスのgetter/setter
     /// </summary>
-    public static T Instance
+    public static T I
     {
       get
       {
@@ -83,7 +83,7 @@ namespace Utils
 
     void OnDestroy()
     {
-      Instance = null;
+      instance = null;
     }
 
     // コンストラクタをprotectedにすることでインスタンスを生成出来なくする
