@@ -24,5 +24,34 @@ namespace Game
             yield return CharacterLoader.Load("Character001", c => m_Character = c);
             m_Character.transform.SetParent(transform);
         }
+
+
+#region Implements of NetworkBehaviour
+
+        public override void OnStartClient()
+        {
+            StartCoroutine(Initialize());
+            PlayerManager.I.Add(this);
+        }
+
+        public override void OnStartLocalPlayer()
+        {
+            gameObject.name = "LocalPlayer";
+        }
+
+#endregion // Implements of NetworkBehaviour
+
+
+#region MonoBehaviour Message
+
+        private void OnDestroy()
+        {
+            if (PlayerManager.I != null)
+            {
+                PlayerManager.I.Remove(this);
+            }
+        }
+
+#endregion // MonoBehaviour Message
     }
 }
