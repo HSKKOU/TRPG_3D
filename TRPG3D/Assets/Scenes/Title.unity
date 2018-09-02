@@ -313,7 +313,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1941701546}
-        m_MethodName: OnClickEnterRoomButton
+        m_MethodName: OnClickMakeRoomButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -871,7 +871,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1941701546}
-        m_MethodName: OnClickMakeRoomButton
+        m_MethodName: OnClickEnterRoomButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1391,6 +1391,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 1941701544}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 526880951c2726440a9fdc6c163eda59, type: 3}
+  m_Script: {fileID: 11500000, guid: 6bdd7ff9ae1133c41b95f6cc9d49eb07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

@@ -23,10 +23,16 @@ namespace Net
         [SerializeField]
         private Text m_Text;
 
+
+        [SerializeField]
+        private Button m_ProceedInGameButton;
+
         public void Start()
         {
             NetworkManager.singleton.StartMatchMaker();
             FindInternetMatch("");
+
+            m_ProceedInGameButton.enabled = false;
         }
 
 #region ルーム作成
@@ -44,6 +50,7 @@ namespace Net
             var requestDomain = 0;             //クライアントバージョンを区別するための番号
 
             NetworkManager.singleton.matchMaker.CreateMatch(matchName, MATCH_SIZE, matchAdvertise, matchPassword, publicClientAddress, privateClientAddress, eloScoreForMatch, requestDomain, OnInternetMatchCreate);
+            m_ProceedInGameButton.enabled = true;
         }
 
         private void OnInternetMatchCreate(bool success, string extendedInfo, MatchInfo matchInfo)
@@ -89,6 +96,7 @@ namespace Net
                     m_Text.text = "Join Match";
                     var earliestCreatedMatch = matches.Find(v => v.currentSize != v.maxSize);
                     NetworkManager.singleton.matchMaker.JoinMatch(earliestCreatedMatch.networkId, "", "", "", 0, 0, OnConnectMatch);
+                    m_ProceedInGameButton.enabled = true;
                 }
             }
             else
