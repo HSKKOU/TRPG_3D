@@ -25,35 +25,6 @@ namespace Net
             }
         }
 
-        /// <summary>
-        /// Playerが追加された時のイベント
-        /// </summary>
-        public event Action<GameObject> onAddPlayer;
-
-        /// <summary>
-        /// Playerが削除された時のイベント
-        /// </summary>
-        public event Action<GameObject> onRemovePlayer;
-
-
-#region Implements of NetworkManager
-
-        public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
-        {
-            GameObject playerObject = (GameObject)Instantiate(playerPrefab);
-            NetworkServer.AddPlayerForConnection(conn, playerObject, playerControllerId);
-            onAddPlayer.SafeInvoke(playerObject);
-        }
-
-
-        public override void OnServerRemovePlayer(NetworkConnection conn, PlayerController player)
-        {
-            onRemovePlayer.SafeInvoke(player.gameObject);
-            base.OnServerRemovePlayer(conn, player);
-        }
-
-#endregion // Implements of NetworkManager
-
 
         /// <summary>
         /// Playerの入れ替え
@@ -64,12 +35,6 @@ namespace Net
         public void ReplacePlayer(NetworkConnection conn, GameObject playerObj, short playerControllerId)
         {
             NetworkServer.ReplacePlayerForConnection(conn, playerObj, playerControllerId);
-        }
-
-
-        private void OnDestroy()
-        {
-            NetworkServer.DisconnectAll();
         }
     }
 }

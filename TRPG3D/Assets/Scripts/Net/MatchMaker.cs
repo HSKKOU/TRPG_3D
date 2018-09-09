@@ -27,7 +27,7 @@ namespace Net
         [SerializeField]
         private Button m_ProceedInGameButton;
 
-        public void Start()
+        public void StartMatching()
         {
             NetworkManager.singleton.StartMatchMaker();
             FindInternetMatch("");

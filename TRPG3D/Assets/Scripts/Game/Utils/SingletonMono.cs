@@ -76,6 +76,12 @@ namespace Utils
     /// </summary>
     static bool m_ApplicationIsQuitting = false;
 
+
+    public static bool IsValid()
+    {
+      return instance != null;
+    }
+
     void OnApplicationQuit()
     {
       m_ApplicationIsQuitting = true;

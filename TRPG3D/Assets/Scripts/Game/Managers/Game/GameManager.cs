@@ -14,7 +14,6 @@ namespace Game
 
 		CreateField,	// フィールド作成
 
-		Lobby,			// ロビー
 		InGame,			// インゲーム
 
 		TestNetwork,	// ネットワークテスト
@@ -38,7 +37,6 @@ namespace Game
 
 			m_StateList.Add(new GameStateCreateField(this));
 
-			m_StateList.Add(new GameStateLobby(this));
 			m_StateList.Add(new GameStateInGame(this));
 
 			m_StateList.Add(new GameStateTestNetwork(this));

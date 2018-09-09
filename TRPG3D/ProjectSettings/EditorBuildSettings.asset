@@ -18,9 +18,6 @@ EditorBuildSettings:
     path: Assets/Scenes/CreateField.unity
     guid: 93731b28109bbbd4d839b87c6484f9ec
   - enabled: 1
-    path: Assets/Scenes/Lobby.unity
-    guid: 1597c092e555dad4aa9b9afc42a05892
-  - enabled: 1
     path: Assets/Scenes/InGame.unity
     guid: a5dc929afb52db64aa9474924e7ceff0
   - enabled: 1
