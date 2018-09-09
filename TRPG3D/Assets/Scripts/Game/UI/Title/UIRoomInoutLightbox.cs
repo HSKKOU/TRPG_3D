@@ -14,22 +14,6 @@ namespace Game
 	public class UIRoomInoutLightbox : MonoBehaviour
 	{
         /// <summary>
-        /// ルーム情報
-        /// </summary>
-        public struct RoomInfo
-        {
-            /// <summary>
-            /// ルーム名
-            /// </summary>
-            public string roomName;
-
-            /// <summary>
-            /// パスワード
-            /// </summary>
-            public string password;
-        }
-
-        /// <summary>
         /// ルーム名入力
         /// </summary>
         [SerializeField]
@@ -45,7 +29,7 @@ namespace Game
         /// <summary>
         /// ルーム情報を入力してOKを押したときのイベント
         /// </summary>
-        public event Action<RoomInfo> onRequestRoomInfoEvent;
+        public event Action<Net.MatchRoomInfo> onRequestRoomInfoEvent;
 
         /// <summary>
         /// キャンセルボタンを押したときのイベント
@@ -58,7 +42,7 @@ namespace Game
         /// </summary>
         public void OnClickRequest()
         {
-            var info = new RoomInfo();
+            var info = new Net.MatchRoomInfo();
             info.roomName = m_RoomNameInputField.text;
             info.password = m_PasswordInputField.text;
             onRequestRoomInfoEvent.SafeInvoke(info);

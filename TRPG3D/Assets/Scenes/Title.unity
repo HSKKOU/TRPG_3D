@@ -3594,6 +3594,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1941701545}
   - component: {fileID: 1941701546}
+  - component: {fileID: 1941701547}
   m_Layer: 0
   m_Name: TitleManager
   m_TagString: Untagged
@@ -3625,9 +3626,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bdd7ff9ae1133c41b95f6cc9d49eb07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_LoadingText: {fileID: 889586794}
   m_MakeRoomInfoInput: {fileID: 1237089130}
   m_EnterRoomInfoInput: {fileID: 716592850}
+  m_LoadingMessageText: {fileID: 889586794}
+  m_MatchMaker: {fileID: 1941701547}
+--- !u!114 &1941701547
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1941701544}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24a8e6117f0bc4c48ad1764859a83156, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2022809424
 GameObject:
   m_ObjectHideFlags: 0

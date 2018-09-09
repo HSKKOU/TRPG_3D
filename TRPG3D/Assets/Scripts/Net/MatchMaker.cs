@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,102 +21,110 @@ namespace Net
         /// </summary>
         private const int RESULT_PAGE_SIZE = 10;
 
-        [SerializeField]
-        private Text m_Text;
+
+        /// <summary>
+        /// ロード中のテキスト変更イベント
+        /// </summary>
+        public event Action<string> onShowLoadingText;
 
 
-        [SerializeField]
-        private Button m_ProceedInGameButton;
-
-        public void StartMatching()
-        {
-            NetworkManager.singleton.StartMatchMaker();
-            FindInternetMatch("");
-
-            m_ProceedInGameButton.enabled = false;
-        }
 
 #region ルーム作成
 
-        public void CreateInternetMatch()
+        public void CreateInternetMatch(MatchRoomInfo info, Action onSuccess, Action onFailed)
         {
-            m_Text.text = "Create Match...";
+            NetworkManager.singleton.StartMatchMaker();
 
-            var matchName = "";
+            var matchName = info.roomName;
             var matchAdvertise = true;         //NetworkMatch.ListMatchesで帰ってくるList<MatchInfoSnapshot>に、このマッチを含めるかどうか
-            var matchPassword = "";            //マッチのパスワード
+            var matchPassword = info.password; //マッチのパスワード
             var publicClientAddress = "";      //クライアントがインターネット経由で直接接続するためのネットワークアドレス
             var privateClientAddress = "";     //クライアントが LAN 経由で直接接続するためのネットワークアドレス
             var eloScoreForMatch = 0;          //いわゆるスキルレート。全クライアントが0だとランダムになる
             var requestDomain = 0;             //クライアントバージョンを区別するための番号
 
-            NetworkManager.singleton.matchMaker.CreateMatch(matchName, MATCH_SIZE, matchAdvertise, matchPassword, publicClientAddress, privateClientAddress, eloScoreForMatch, requestDomain, OnInternetMatchCreate);
-            m_ProceedInGameButton.enabled = true;
-        }
+            NetworkManager.singleton.matchMaker.CreateMatch(matchName, MATCH_SIZE, matchAdvertise, matchPassword, publicClientAddress, privateClientAddress, eloScoreForMatch, requestDomain, 
+            (success, extendedInfo, matchInfo) => {
+                if (success)
+                {
+                    MatchInfo hostInfo = matchInfo;
+                    NetworkServer.Listen(hostInfo, 9000);
 
-        private void OnInternetMatchCreate(bool success, string extendedInfo, MatchInfo matchInfo)
-        {
-            if (success)
-            {
-                MatchInfo hostInfo = matchInfo;
-                NetworkServer.Listen(hostInfo, 9000);
+                    NetworkManager.singleton.StartHost(hostInfo);
 
-                NetworkManager.singleton.StartHost(hostInfo);
-            }
-            else
-            {
-                m_Text.text = "Create match failed";
-            }
+                    onShowLoadingText.SafeInvoke("ルーム作成に成功しました");
+                    onSuccess.SafeInvoke();
+                }
+                else
+                {
+                    onShowLoadingText.SafeInvoke("ルーム作成に失敗しました");
+                    onFailed.SafeInvoke();
+                }
+            });
         }
 
 #endregion // ルーム作成
 
-        public void FindInternetMatch(string matchName)
+
+#region ルーム入室
+
+        public void EnterInternetMatch(MatchRoomInfo info, Action onSuccess, Action onFailed)
         {
+            NetworkManager.singleton.StartMatchMaker();
+
             var startPageNumber = 0;                         //リストし始めるページ
-            var matchNameFilter = matchName;                 //*<matchNameFilter>*に該当するマッチが検索される
+            var matchNameFilter = info.roomName;             //*<matchNameFilter>*に該当するマッチが検索される
             var filterOutPrivateMatchesFromResults = true;   //プライベートマッチを検索結果に含めるかどうか
             var eloScoreTarget = 0;                          //検索するときのスキルレート
             var requestDomain = 0;                           //クライアントバージョンを区別するための番号
 
-            m_Text.text = "Searching Match...";
-
-            NetworkManager.singleton.matchMaker.ListMatches(startPageNumber, RESULT_PAGE_SIZE, matchNameFilter, filterOutPrivateMatchesFromResults, eloScoreTarget, requestDomain, OnJoinInternetMatch);
-        }
-
-        private void OnJoinInternetMatch(bool success, string extendedInfo, List<MatchInfoSnapshot> matches)
-        {
-            if (success)
-            {
-                if (matches.Count == 0)
+            NetworkManager.singleton.matchMaker.ListMatches(startPageNumber, RESULT_PAGE_SIZE, matchNameFilter, filterOutPrivateMatchesFromResults, eloScoreTarget, requestDomain, 
+            (success, extendedInfo, matches) => {
+                if (success)
                 {
-                    CreateInternetMatch();
+                    if (matches.Count == 0)
+                    {
+                        onShowLoadingText.SafeInvoke("該当するルームがありませんでした");
+                        onFailed.SafeInvoke();
+                    }
+                    else
+                    {
+                        foreach (var match in matches)
+                        {
+                            Debug.LogFormat("roomName: {0}", match.name);
+                        }
+                        var earliestCreatedMatch = matches.Find(v => v.currentSize != v.maxSize);
+                        JoinMatch(earliestCreatedMatch.networkId, info, onSuccess, onFailed);
+                    }
                 }
                 else
                 {
-                    m_Text.text = "Join Match";
-                    var earliestCreatedMatch = matches.Find(v => v.currentSize != v.maxSize);
-                    NetworkManager.singleton.matchMaker.JoinMatch(earliestCreatedMatch.networkId, "", "", "", 0, 0, OnConnectMatch);
-                    m_ProceedInGameButton.enabled = true;
+                    onShowLoadingText.SafeInvoke("ルームリストの取得に失敗しました");
+                    onFailed.SafeInvoke();
                 }
-            }
-            else
-            {
-                m_Text.text = "Couldn't connect to match maker";
-            }
+            });
         }
 
-        private void OnConnectMatch(bool success, string extendedInfo, MatchInfo matchInfo)
+
+        private void JoinMatch(UnityEngine.Networking.Types.NetworkID networkId, MatchRoomInfo roomInfo, Action onSuccess, Action onFailed)
         {
-            if (success)
-            {
-                MatchInfo hostInfo = matchInfo;
-                NetworkManager.singleton.StartClient(hostInfo);
-            }
-            else
-            {
-                CreateInternetMatch();
-            }
+            NetworkManager.singleton.matchMaker.JoinMatch(networkId, roomInfo.password, "", "", 0, 0, 
+            (success, extendedInfo, match) => {
+                if (success)
+                {
+                    MatchInfo hostInfo = match;
+                    NetworkManager.singleton.StartClient(hostInfo);
+                    onShowLoadingText.SafeInvoke("ルーム参加に成功しました");
+                    onSuccess.SafeInvoke();
+                }
+                else
+                {
+                    onShowLoadingText.SafeInvoke("ルームに参加できませんでした");
+                    onFailed.SafeInvoke();
+                }
+            });
         }
+
+#endregion // ルーム入室
     }
 }

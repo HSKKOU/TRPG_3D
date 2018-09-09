@@ -12,27 +12,6 @@ namespace Game
 	/// </summary>
 	public class TitleManager : SingletonMono<TitleManager>
 	{
-
-#region 定数定義
-
-		/// <summary>
-		/// 部屋作成中メッセージ
-		/// </summary>
-		private const string MAKE_ROOM_TEXT = "ルーム作成中...";
-
-		/// <summary>
-		/// マッチメイキング中メッセージ
-		/// </summary>
-		private const string MATCHING_TEXT = "マッチング中...";
-
-#endregion // 定数定義
-
-		/// <summary>
-		/// ロードテキスト
-		/// </summary>
-		[SerializeField]
-		private Text m_LoadingText;
-
 		/// <summary>
 		/// ルーム作成情報を入力
 		/// </summary>
@@ -45,6 +24,18 @@ namespace Game
 		[SerializeField]
 		private UIRoomInoutLightbox m_EnterRoomInfoInput;
 
+		/// <summary>
+		/// マッチメーカーのローディングメッセージ
+		/// </summary>
+		[SerializeField]
+		private Text m_LoadingMessageText;
+
+		/// <summary>
+		/// マッチメイカー
+		/// </summary>
+		[SerializeField]
+		private Net.MatchMaker m_MatchMaker;
+
 
 
 #region MonoBehaviour Message
@@ -55,6 +46,8 @@ namespace Game
 			m_MakeRoomInfoInput.onCancelEvent += CloseMakeRoomInfoInput;
 			m_EnterRoomInfoInput.onRequestRoomInfoEvent += EnterRoom;
 			m_EnterRoomInfoInput.onCancelEvent += CloseEnterRoomInfoInput;
+
+			m_MatchMaker.onShowLoadingText += UpdateMatchMakingText;
 		}
 
 		private void Start()
@@ -65,10 +58,21 @@ namespace Game
 
 		private void OnDestroy()
 		{
-			m_MakeRoomInfoInput.onRequestRoomInfoEvent -= MakeRoom;
-			m_MakeRoomInfoInput.onCancelEvent -= CloseMakeRoomInfoInput;
-			m_EnterRoomInfoInput.onRequestRoomInfoEvent -= EnterRoom;
-			m_EnterRoomInfoInput.onCancelEvent -= CloseEnterRoomInfoInput;
+			if (m_MakeRoomInfoInput != null)
+			{
+				m_MakeRoomInfoInput.onRequestRoomInfoEvent -= MakeRoom;
+				m_MakeRoomInfoInput.onCancelEvent -= CloseMakeRoomInfoInput;
+			}
+			if (m_EnterRoomInfoInput != null)
+			{
+				m_EnterRoomInfoInput.onRequestRoomInfoEvent -= EnterRoom;
+				m_EnterRoomInfoInput.onCancelEvent -= CloseEnterRoomInfoInput;
+			}
+
+			if (m_MatchMaker != null)
+			{
+				m_MatchMaker.onShowLoadingText -= UpdateMatchMakingText;
+			}
 
 			if (UIManager.IsValid())
 			{
@@ -85,17 +89,29 @@ namespace Game
 		/// <summary>
 		/// ルーム作成
 		/// </summary>
-		private void MakeRoom(UIRoomInoutLightbox.RoomInfo info)
+		private void MakeRoom(Net.MatchRoomInfo info)
 		{
-			m_LoadingText.text = MAKE_ROOM_TEXT;
+			m_MatchMaker.CreateInternetMatch(info,
+			() => {
+
+			},
+			() => {
+
+			});
 		}
 
 		/// <summary>
 		/// ルーム入場
 		/// </summary>
-		private void EnterRoom(UIRoomInoutLightbox.RoomInfo info)
+		private void EnterRoom(Net.MatchRoomInfo info)
 		{
-			m_LoadingText.text = MATCHING_TEXT;
+			m_MatchMaker.EnterInternetMatch(info,
+			() => {
+
+			},
+			() => {
+				
+			});
 		}
 
 #endregion // マッチマイカー
@@ -154,6 +170,15 @@ namespace Game
 		{
 			m_EnterRoomInfoInput.gameObject.SetActive(false);
 			UIManager.I.HideFilter();
+		}
+
+
+		/// <summary>
+		/// マッチメーカーの状態文字列を表示する
+		/// </summary>
+		private void UpdateMatchMakingText(string text)
+		{
+			m_LoadingMessageText.text = text;
 		}
 
 #endregion // UI
