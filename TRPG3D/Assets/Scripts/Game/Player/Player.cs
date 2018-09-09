@@ -21,7 +21,7 @@ namespace Game
         /// </summary>
         public IEnumerator Initialize()
         {
-            yield return CharacterLoader.Load("Character001", c => m_Character = c);
+            yield return CharacterLoader.Load("TestBlue", c => m_Character = c);
             m_Character.transform.SetParent(transform);
         }
 
