@@ -87,10 +87,10 @@ namespace Game
 		{
 			m_MatchMaker.CreateInternetMatch(info,
 			() => {
-
+				GameManager.I.ChangeState(GameState.InGame);
 			},
 			() => {
-
+				// do nothing
 			});
 		}
 
@@ -101,10 +101,10 @@ namespace Game
 		{
 			m_MatchMaker.EnterInternetMatch(info,
 			() => {
-
+				GameManager.I.ChangeState(GameState.InGame);
 			},
 			() => {
-				
+				// do nothing
 			});
 		}
 
@@ -153,7 +153,10 @@ namespace Game
 		/// </summary>
 		private void CloseMakeRoomInfoInput()
 		{
-			m_MakeRoomInfoInput.gameObject.SetActive(false);
+			if (m_MakeRoomInfoInput != null)
+			{
+				m_MakeRoomInfoInput.gameObject.SetActive(false);
+			}
 			UIManager.I.HideFilter();
 		}
 
@@ -162,7 +165,10 @@ namespace Game
 		/// </summary>
 		private void CloseEnterRoomInfoInput()
 		{
-			m_EnterRoomInfoInput.gameObject.SetActive(false);
+			if (m_EnterRoomInfoInput != null)
+			{
+				m_EnterRoomInfoInput.gameObject.SetActive(false);
+			}
 			UIManager.I.HideFilter();
 		}
 
@@ -172,7 +178,10 @@ namespace Game
 		/// </summary>
 		private void UpdateMatchMakingText(string text)
 		{
-			m_LoadingMessageText.text = text;
+			if (m_LoadingMessageText != null)
+			{
+				m_LoadingMessageText.text = text;
+			}
 		}
 
 #endregion // UI
