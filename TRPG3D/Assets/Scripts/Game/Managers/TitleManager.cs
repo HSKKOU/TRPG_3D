@@ -73,12 +73,6 @@ namespace Game
 			{
 				m_MatchMaker.onShowLoadingText -= UpdateMatchMakingText;
 			}
-
-			if (UIManager.IsValid())
-			{
-				UIManager.I.onClickFilterEvent -= CloseMakeRoomInfoInput;
-				UIManager.I.onClickFilterEvent -= CloseEnterRoomInfoInput;
-			}
 		}
 
 #endregion // MonoBehaviour Message
