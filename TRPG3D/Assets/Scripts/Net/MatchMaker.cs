@@ -74,7 +74,7 @@ namespace Net
 
             var startPageNumber = 0;                         //リストし始めるページ
             var matchNameFilter = info.roomName;             //*<matchNameFilter>*に該当するマッチが検索される
-            var filterOutPrivateMatchesFromResults = true;   //プライベートマッチを検索結果に含めるかどうか
+            var filterOutPrivateMatchesFromResults = false;  //プライベートマッチを検索結果に含めないか
             var eloScoreTarget = 0;                          //検索するときのスキルレート
             var requestDomain = 0;                           //クライアントバージョンを区別するための番号
 
@@ -89,10 +89,12 @@ namespace Net
                     }
                     else
                     {
+#if UNITY_EDITOR
                         foreach (var match in matches)
                         {
                             Debug.LogFormat("roomName: {0}", match.name);
                         }
+#endif
                         var earliestCreatedMatch = matches.Find(v => v.currentSize != v.maxSize);
                         JoinMatch(earliestCreatedMatch.networkId, info, onSuccess, onFailed);
                     }
